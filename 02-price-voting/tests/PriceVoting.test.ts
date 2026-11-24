@@ -121,6 +121,18 @@ describe("PriceVoting", function () {
         voting.write.vote([100n, parseEther("10")], { account: alice.account })
       );
     });
+    it("rejects vote when caller has not approved enough tokens", async function () {
+      const { voting, token, alice } =
+        await networkHelpers.loadFixture(deployVotingFixture);
+
+      await token.write.approve([voting.address, parseEther("10")], {
+        account: alice.account,
+      });
+
+      await assert.rejects(
+        voting.write.vote([100n, parseEther("50")], { account: alice.account })
+      );
+    });
   });
 
   describe("finalize", function () {
