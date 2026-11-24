@@ -26,19 +26,19 @@ contract Token is IERC20 {
         emit Transfer(address(0), msg.sender, initialSupply);
     }
 
-    function totalSupply() external view returns (uint256) {
+    function totalSupply() external view override returns (uint256) {
         return _totalSupply;
     }
 
-    function balanceOf(address account) external view returns (uint256) {
+    function balanceOf(address account) external view override returns (uint256) {
         return _balances[account];
     }
 
-    function allowance(address owner, address spender) external view returns (uint256) {
+    function allowance(address owner, address spender) external view override returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    function transfer(address to, uint256 value) external returns (bool) {
+    function transfer(address to, uint256 value) external override returns (bool) {
         if (to == address(0)) revert TransferToZeroAddress();
         if (_balances[msg.sender] < value) revert InsufficientBalance();
 
@@ -48,7 +48,7 @@ contract Token is IERC20 {
         return true;
     }
 
-    function approve(address spender, uint256 value) external returns (bool) {
+    function approve(address spender, uint256 value) external override returns (bool) {
         if (spender == address(0)) revert ApproveToZeroAddress();
 
         _allowances[msg.sender][spender] = value;
@@ -56,7 +56,7 @@ contract Token is IERC20 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint256 value) external returns (bool) {
+    function transferFrom(address from, address to, uint256 value) external override returns (bool) {
         if (to == address(0)) revert TransferToZeroAddress();
         if (_allowances[from][msg.sender] < value) revert InsufficientAllowance();
         if (_balances[from] < value) revert InsufficientBalance();
