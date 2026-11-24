@@ -19,6 +19,7 @@ contract PriceVoting {
     uint256 public currentTokenPrice;
     uint256 public highestWeight;
     uint256 public leaderPrice;
+    uint256 public tiedPricesCount;
     bool public finalized;
 
     mapping(uint256 => uint256) public priceWeight;
@@ -65,6 +66,11 @@ contract PriceVoting {
         if (updatedWeight > highestWeight) {
             highestWeight = updatedWeight;
             leaderPrice = price;
+            tiedPricesCount = 1;
+        } else if (updatedWeight == highestWeight && updatedWeight > 0) {
+            if (price != leaderPrice) {
+                tiedPricesCount += 1;
+            }
         }
 
         emit Voted(msg.sender, price, amount);
@@ -75,9 +81,10 @@ contract PriceVoting {
         if (finalized) revert AlreadyFinalized();
 
         finalized = true;
-        currentTokenPrice = leaderPrice;
+        uint256 winningPrice = (highestWeight == 0 || tiedPricesCount > 1) ? 0 : leaderPrice;
+        currentTokenPrice = winningPrice;
 
-        emit PriceFinalized(leaderPrice, highestWeight);
+        emit PriceFinalized(winningPrice, highestWeight);
     }
 
     function claim() external {
